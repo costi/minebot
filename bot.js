@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const mineflayer = require('mineflayer')
+const { pathfinder } = require('mineflayer-pathfinder')
 
 const DEFAULT_BOT_COUNT = 1
 const HOST = 'lianli.local'
@@ -14,6 +15,7 @@ const CONFIG = {
   adminUsers: [],
   allowAllReload: true,
   reloadCommand: '!reload',
+  nearbyRange: 8,
 }
 
 function showHelp() {
@@ -72,6 +74,7 @@ function logSensor(username, label, value) {
 function createSkillRuntime(bot, ctxBase) {
   const listeners = []
   const intervals = []
+  const timeouts = []
   const disposers = []
 
   function on(emitter, event, handler) {
@@ -82,6 +85,12 @@ function createSkillRuntime(bot, ctxBase) {
   function setIntervalTracked(fn, ms) {
     const id = setInterval(fn, ms)
     intervals.push(id)
+    return id
+  }
+
+  function setTimeoutTracked(fn, ms) {
+    const id = setTimeout(fn, ms)
+    timeouts.push(id)
     return id
   }
 
@@ -100,6 +109,11 @@ function createSkillRuntime(bot, ctxBase) {
     }
     intervals.length = 0
 
+    for (const id of timeouts) {
+      clearTimeout(id)
+    }
+    timeouts.length = 0
+
     for (const dispose of disposers) {
       dispose()
     }
@@ -109,12 +123,14 @@ function createSkillRuntime(bot, ctxBase) {
   return {
     on,
     setInterval: setIntervalTracked,
+    setTimeout: setTimeoutTracked,
     addDisposer,
     disposeAll,
     ctx: {
       ...ctxBase,
       on,
       setInterval: setIntervalTracked,
+      setTimeout: setTimeoutTracked,
       addDisposer,
     },
   }
@@ -131,6 +147,10 @@ function loadSkills(bot, ctxBase) {
       .readdirSync(skillsDir)
       .filter((file) => file.endsWith('.js'))
       .sort()
+
+    console.log(
+      `[${ctxBase.username}] Loading skills: ${skillFiles.join(', ')}`
+    )
 
     for (const file of skillFiles) {
       const skillPath = path.join(skillsDir, file)
@@ -174,6 +194,8 @@ function createBot(index) {
     auth: 'offline',
     version: VERSION,
   })
+
+  bot.loadPlugin(pathfinder)
 
   const ctx = {
     username,

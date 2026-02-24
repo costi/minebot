@@ -23,13 +23,6 @@ module.exports = function goalSurvivalSkill(bot, ctx) {
   ctx.on(bot, 'spawn', () => {
     bot.survivalMode = false
     updateSurvival(bot, username, logSensor)
-
-    ctx.setInterval(() => {
-      if (!bot.survivalMode) {
-        bot.setControlState('jump', true)
-        setTimeout(() => bot.setControlState('jump', false), 100)
-      }
-    }, 1000)
   })
 
   ctx.on(bot, 'health', () => {

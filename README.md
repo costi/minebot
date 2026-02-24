@@ -60,6 +60,13 @@ npm run reload:bg
 npm run watch:skills
 ```
 
+## Follow command
+Send a whisper to the bot:
+- `!follow` (follows the sender)
+- `!follow <playerName>` (follows a specific player)
+- `!stop` (stops following)
+
+The bot will refuse to follow while in survival mode (low health/food).
 ## Configuration
 Edit these constants in `bot.js`:
 - `BOT_COUNT`: number of bots to spawn
@@ -70,6 +77,7 @@ Edit these constants in `bot.js`:
 - `CONFIG.adminUsers`: usernames allowed to run chat commands
 - `CONFIG.allowAllReload`: allow any user to run the reload command
 - `CONFIG.reloadCommand`: chat command string for reload
+- `CONFIG.nearbyRange`: radius for nearby entity listing
 
 ## Notes
 - The bots use `auth: 'offline'`. If you connect to an online‑mode server, you will need to implement proper authentication.
