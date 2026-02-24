@@ -4,7 +4,13 @@
   "description": "A Minecraft bot using mineflayer",
   "main": "bot.js",
   "scripts": {
-    "start": "node bot.js"
+    "start": "node bot.js",
+    "start:bg": "bash scripts/start-bg.sh",
+    "stop:bg": "sh -c \"if [ -f bot.pid ]; then kill -TERM $(cat bot.pid) && rm -f bot.pid; else echo 'No bot.pid found'; fi\"",
+    "restart:bg": "sh -c \"npm run stop:bg; npm run start:bg\"",
+    "logs:bg": "sh -c \"if [ -f bot.log ]; then tail -f bot.log; else echo 'No bot.log found'; fi\"",
+    "reload:bg": "sh -c \"if [ -f bot.pid ]; then kill -USR1 $(cat bot.pid); else echo 'No bot.pid found'; fi\"",
+    "watch:skills": "node scripts/watch-skills.js"
   },
   "dependencies": {
     "mineflayer": "^4.23.0"
